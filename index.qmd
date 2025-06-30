@@ -1,0 +1,134 @@
+---
+title: Using uv on EDDIE
+output: html_document
+theme: cosmo
+format:
+  html:
+    toc: true
+    toc-location: left
+---
+
+# Introduction
+
+This is a guide for using python on the Edinburgh supercomputer EDDIE. We'll use the python packaging manager `uv` to do this. This guide assumes some familiarity with the terminal. Here the aim is to run a single self-contained python script on EDDIE.
+
+# Using `uv` locally
+
+Before using EDDIE, let's get `uv` running locally.
+
+First, [install uv](https://docs.astral.sh/uv/getting-started/installation/) using the terminal. Check that is works by running `uv` in the terminal.
+
+I suggest initialising your project on GitHub instead of locally. If you want to do this: go to GitHub, make a new repo, then clone it to your machine (git clone https://github.com/chrishalcrow/my_project.git). Now enter that folder (`cd my_project`).
+
+Now add a script to the folder that you'd like to run. Here's an example, which I'll call `script.py`:
+
+``` python
+import numpy as np
+an_array = np.ones(100)
+sum_of_array = np.sum(an_array)
+print(f"The sum of 100 ones is {sum_of_array}.")
+```
+
+Run `uv run script.py`. The command `uv run` means "create a virtual environment specified by something, then run python within this environment. When you run this, you should get an error like:
+
+``` bash
+Traceback (most recent call last):
+  File "/Users/christopherhalcrow/Work/fromgit/test/script.py", line 1, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+```
+
+If you don't get this error, something is wrong. Disable any virtual environments you might have activated from `conda` or `venv`.
+
+To make the script work, we need to tell `uv` that it needs to install `numpy` when it runs python. There are several ways to do this. You can add the dependencies directly to the script. Instead, we're going to add the dependencies to the _folder_ the script is in. Then if you want to make another script in the folder which needs the same dependencies you can.
+
+To make the _folder_ aware of uv, run `uv init`. Then add numpy to the folder by running `uv add numpy`. Here is my output:
+
+``` bash
+Using CPython 3.13.2
+Creating virtual environment at: .venv
+Resolved 2 packages in 121ms
+Installed 1 package in 28ms
+ + numpy==2.3.1
+```
+
+Now try running `script.py` again by running `uv run script.py`. My in/output:
+
+``` bash
+> uv run script.py
+The sum of 100 ones is 100.0.
+```
+
+Now let's add a dependency from github. Suppose we want the latest dev version of spikeinterface (who doesn't?!?!). We add it similarly to numpy, but with some additional git stuff:
+
+``` bash
+uv add git+https://github.com/SpikeInterface/spikeinterface.git
+```
+
+In the background, `uv` has been adding packages to its `pyproject.toml` file. Take a look at it. If we put this folder (with the `pyproject.toml`) file on EDDIE then when we run `uv run blah.py` it will read the `pyproject.toml` file and automatically set up the virtual environment without us having to do anything. Nice.
+
+Once this is working, push it to git (I recommend using VSCode for this).
+
+For whatever code you're working on, this is the first step. Make sure `uv run my_script.py` runs on _your_ computer. Once it does, you're ready to...
+
+# Install `uv` on EDDIE
+
+Because of EDDIE's storage system and a few supercomputer quirks, we need to adjust some of the default settings when installing uv on EDDIE. Note: you only need to do this _once_, then `uv` will be installed forever on your EDDIE login.
+
+## Workflow
+
+A suggested workflow: never touch anything on EDDIE. If you want to edit anything, edit it locally, push it, then pull it on EDDIE. 
+
+On EDDIE, make sure to put the code in your scratch (`/exports/eddie/scratch/chalcrow/path/to/my_project`). This gets deleted every 30 days, but your code is always on GitHub so it doesn't matter. `uv` will create the virtual environments here. These are too big to fit into your not-scratch.
+
+So, practically, log-in to EDDIE (`ssh chalcrow@eddie.ecdf.ed.ac.uk `), cd to your scratch and where you wanna save your code (`cd /exports/eddie/scratch/chalcrow/`), get your project (`git clone https://github.com/chrishalcrow/my_project.git`), and change directory into your project (`cd my_project`). `uv` should just work (although you should only really run it on a login node). Try running `uv run script.py`.
+
+# Run python on EDDIE using `.sh` file
+
+To run jobs on EDDIE, you request a node with certain compute limits. Then tell it what to do. The following script asks for 1 cores with 19G of RAM each (the smallest cores on EDDIE have 19G, so there's no point going lower) for 30 minutes. The job is called `my_job`. The job changes directory to where my script is, then does `uv run scripy.py`.
+
+``` bash
+#!/bin/bash
+#$ -cwd -pe sharedmem 1 -l h_vmem=19G,h_rt=0:29:59 -N my_job
+
+cd /exports/eddie/scratch/chalcrow/path/to/my_project
+uv run main_script.py
+```
+
+Add this file to your project folder and call it "test_script.sh", push it locally, pull it on EDDIE, and run `qsub test_script.sh`. After it runs, the output should be in `my_job.o43563274` (or some other random number). Display the ouput in terminal by running `cat my_job.o43563274`.
+
+# Stagein/out files
+
+The worst bit of EDDIE is moving files to and from the DataStore. The basic stage script looks like:
+
+``` bin
+#!/bin/sh
+#$ -cwd -q staging -l h_rt=00:59:59
+cp -rn source destination
+```
+
+The official docs suggest using `rsync` but we've had permission issues with this in the past. So I now suggest using `cp`. However, we use the `-n` flag which means "do not copy over anything". This is just to be when dealing with raw data.
+
+If you have fairly simple things to copy over, I would just write `.sh` files like the one above and save them in a stagein or stageout folder in your repo. If you don't have too many, you could save the scripts used to save python too. (Alternatively, write scripts to generate these. [See below]()). So you'd entire project (the thing you're push/pulling from on github) looks like:
+
+``` bash
+my_project/
+    main_script.py
+    pyproject.toml
+    stagein_scripts/
+        stagein_1.sh
+        stagein_2.sh
+        stagein_3.sh
+    stageout_scripts/
+        stageout_1.sh
+        ...
+    python_scripts/
+        run_M20_D21.sh
+        ...
+```
+
+# Life is slightly easier with `eddie_helper`
+
+
+
+

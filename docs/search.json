@@ -1,0 +1,16 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Using uv on EDDIE",
+    "section": "",
+    "text": "This is a guide for using python on the Edinburgh supercomputer EDDIE. We’ll use the python packaging manager uv to do this. This guide assumes some familiarity with the terminal. Here the aim is to run a single self-contained python script on EDDIE."
+  },
+  {
+    "objectID": "index.html#workflow",
+    "href": "index.html#workflow",
+    "title": "Using uv on EDDIE",
+    "section": "Workflow",
+    "text": "Workflow\nA suggested workflow: never touch anything on EDDIE. If you want to edit anything, edit it locally, push it, then pull it on EDDIE.\nOn EDDIE, make sure to put the code in your scratch (/exports/eddie/scratch/chalcrow/path/to/my_project). This gets deleted every 30 days, but your code is always on GitHub so it doesn’t matter. uv will create the virtual environments here. These are too big to fit into your not-scratch.\nSo, practically, log-in to EDDIE (ssh chalcrow@eddie.ecdf.ed.ac.uk), cd to your scratch and where you wanna save your code (cd /exports/eddie/scratch/chalcrow/), get your project (git clone https://github.com/chrishalcrow/my_project.git), and change directory into your project (cd my_project). uv should just work (although you should only really run it on a login node). Try running uv run script.py."
+  }
+]
