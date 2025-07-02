@@ -208,7 +208,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#$ -cwd -pe sharedmem 1 -l h_vmem=19G,h_rt=0:29:59 -N my_job</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /exports/eddie/scratch/chalcrow/path/to/my_project</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run main_script.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">/home/chalcrow/.local/bin/uv</span> run main_script.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>(we have to replace <code>uv</code> with <code>/home/chalcrow/.local/bin/uv</code> [replace to use your username]] because of some quirk of EDDIE).</p>
 <p>Add this file to your project folder and call it “test_script.sh”, push it locally, pull it on EDDIE, and run <code>qsub test_script.sh</code>. After it runs, the output should be in <code>my_job.o43563274</code> (or some other random number). Display the ouput in terminal by running <code>cat my_job.o43563274</code>.</p>
 </section>
 <section id="stageinout-files" class="level1">

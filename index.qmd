@@ -100,8 +100,10 @@ To run jobs on EDDIE, you request a node with certain compute limits. Then tell 
 #$ -cwd -pe sharedmem 1 -l h_vmem=19G,h_rt=0:29:59 -N my_job
 
 cd /exports/eddie/scratch/chalcrow/path/to/my_project
-uv run main_script.py
+/home/chalcrow/.local/bin/uv run main_script.py
 ```
+
+(we have to replace `uv` with `/home/chalcrow/.local/bin/uv` [replace to use your username]] because of some quirk of EDDIE).
 
 Add this file to your project folder and call it "test_script.sh", push it locally, pull it on EDDIE, and run `qsub test_script.sh`. After it runs, the output should be in `my_job.o43563274` (or some other random number). Display the ouput in terminal by running `cat my_job.o43563274`.
 
