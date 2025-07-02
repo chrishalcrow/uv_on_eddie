@@ -73,15 +73,23 @@ For whatever code you're working on, this is the first step. Make sure `uv run m
 
 # Install `uv` on EDDIE
 
-Because of EDDIE's storage system and a few supercomputer quirks, we need to adjust some of the default settings when installing uv on EDDIE. Note: you only need to do this _once_, then `uv` will be installed forever on your EDDIE login.
+Because of EDDIE's storage system and a few supercomputer quirks, we need to adjust some of the default settings when installing uv on EDDIE. Note: you only need to do this _once_, then `uv` will be installed forever on your EDDIE login. If you're not used to vim this will be a bit fiddly. Please follow these instructions carefully.
 
-## Workflow
+Log in to Eddie. Request a login node using `qlogin -l h_vmem=8G`. Install `uv` using `curl -LsSf https://astral.sh/uv/install.sh | sh`.
 
-A suggested workflow: never touch anything on EDDIE. If you want to edit anything, edit it locally, push it, then pull it on EDDIE. 
+We need to tell `uv` where to store the cache. We do this by adding the line `export UV_CACHE_DIR="/exports/eddie/scratch/chalcrow/uv"` to the file `.bashrc`. To do this do the following:
 
-On EDDIE, make sure to put the code in your scratch (`/exports/eddie/scratch/chalcrow/path/to/my_project`). This gets deleted every 30 days, but your code is always on GitHub so it doesn't matter. `uv` will create the virtual environments here. These are too big to fit into your not-scratch.
+- do `vim .bashrc`. You should enter vim and see some text.
+- type `shift + g`. Your cursor should move to the bottom of the text.
+- type `o`. You should be in "insert" mode and be able to type.
+- type "export UV_CACHE_DIR="/exports/eddie/scratch/chalcrow/uv" with your username instead of mine.
+- type `esc`, then `:w`, then `enter`, then `:q`, then enter
 
-So, practically, log-in to EDDIE (`ssh chalcrow@eddie.ecdf.ed.ac.uk `), cd to your scratch and where you wanna save your code (`cd /exports/eddie/scratch/chalcrow/`), get your project (`git clone https://github.com/chrishalcrow/my_project.git`), and change directory into your project (`cd my_project`). `uv` should just work (although you should only really run it on a login node). Try running `uv run script.py`.
+You should be back in the usual terminal. You're set!
+
+A suggested workflow: never touch anything on EDDIE. If you want to edit anything, edit it locally, push it, then pull it on EDDIE. On EDDIE, make sure to put the code in your scratch (`/exports/eddie/scratch/chalcrow/path/to/my_project`). This gets deleted every 30 days, but your code is always on GitHub so it doesn't matter. `uv` will create the virtual environments here. These are too big to fit into your not-scratch.
+
+So, practically, log-in to EDDIE (`ssh chalcrow@eddie.ecdf.ed.ac.uk `), cd to your scratch and where you wanna save your code (`cd /exports/eddie/scratch/chalcrow/`), get your project (`git clone https://github.com/chrishalcrow/my_project.git`), and change directory into your project (`cd my_project`). `uv` should just work. Try running `uv run script.py`.
 
 # Run python on EDDIE using `.sh` file
 

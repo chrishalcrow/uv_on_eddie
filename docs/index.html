@@ -116,10 +116,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
   <li><a href="#using-uv-locally" id="toc-using-uv-locally" class="nav-link" data-scroll-target="#using-uv-locally">Using <code>uv</code> locally</a></li>
-  <li><a href="#install-uv-on-eddie" id="toc-install-uv-on-eddie" class="nav-link" data-scroll-target="#install-uv-on-eddie">Install <code>uv</code> on EDDIE</a>
-  <ul class="collapse">
-  <li><a href="#workflow" id="toc-workflow" class="nav-link" data-scroll-target="#workflow">Workflow</a></li>
-  </ul></li>
+  <li><a href="#install-uv-on-eddie" id="toc-install-uv-on-eddie" class="nav-link" data-scroll-target="#install-uv-on-eddie">Install <code>uv</code> on EDDIE</a></li>
   <li><a href="#run-python-on-eddie-using-.sh-file" id="toc-run-python-on-eddie-using-.sh-file" class="nav-link" data-scroll-target="#run-python-on-eddie-using-.sh-file">Run python on EDDIE using <code>.sh</code> file</a></li>
   <li><a href="#stageinout-files" id="toc-stageinout-files" class="nav-link" data-scroll-target="#stageinout-files">Stagein/out files</a></li>
   <li><a href="#life-is-slightly-easier-with-eddie_helper" id="toc-life-is-slightly-easier-with-eddie_helper" class="nav-link" data-scroll-target="#life-is-slightly-easier-with-eddie_helper">Life is slightly easier with <code>eddie_helper</code></a></li>
@@ -190,13 +187,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="install-uv-on-eddie" class="level1">
 <h1>Install <code>uv</code> on EDDIE</h1>
-<p>Because of EDDIE’s storage system and a few supercomputer quirks, we need to adjust some of the default settings when installing uv on EDDIE. Note: you only need to do this <em>once</em>, then <code>uv</code> will be installed forever on your EDDIE login.</p>
-<section id="workflow" class="level2">
-<h2 class="anchored" data-anchor-id="workflow">Workflow</h2>
-<p>A suggested workflow: never touch anything on EDDIE. If you want to edit anything, edit it locally, push it, then pull it on EDDIE.</p>
-<p>On EDDIE, make sure to put the code in your scratch (<code>/exports/eddie/scratch/chalcrow/path/to/my_project</code>). This gets deleted every 30 days, but your code is always on GitHub so it doesn’t matter. <code>uv</code> will create the virtual environments here. These are too big to fit into your not-scratch.</p>
-<p>So, practically, log-in to EDDIE (<code>ssh chalcrow@eddie.ecdf.ed.ac.uk</code>), cd to your scratch and where you wanna save your code (<code>cd /exports/eddie/scratch/chalcrow/</code>), get your project (<code>git clone https://github.com/chrishalcrow/my_project.git</code>), and change directory into your project (<code>cd my_project</code>). <code>uv</code> should just work (although you should only really run it on a login node). Try running <code>uv run script.py</code>.</p>
-</section>
+<p>Because of EDDIE’s storage system and a few supercomputer quirks, we need to adjust some of the default settings when installing uv on EDDIE. Note: you only need to do this <em>once</em>, then <code>uv</code> will be installed forever on your EDDIE login. If you’re not used to vim this will be a bit fiddly. Please follow these instructions carefully.</p>
+<p>Log in to Eddie. Request a login node using <code>qlogin -l h_vmem=8G</code>. Install <code>uv</code> using <code>curl -LsSf https://astral.sh/uv/install.sh | sh</code>.</p>
+<p>We need to tell <code>uv</code> where to store the cache. We do this by adding the line <code>export UV_CACHE_DIR="/exports/eddie/scratch/chalcrow/uv"</code> to the file <code>.bashrc</code>. To do this do the following:</p>
+<ul>
+<li>do <code>vim .bashrc</code>. You should enter vim and see some text.</li>
+<li>type <code>shift + g</code>. Your cursor should move to the bottom of the text.</li>
+<li>type <code>o</code>. You should be in “insert” mode and be able to type.</li>
+<li>type “export UV_CACHE_DIR=”/exports/eddie/scratch/chalcrow/uv” with your username instead of mine.</li>
+<li>type <code>esc</code>, then <code>:w</code>, then <code>enter</code>, then <code>:q</code>, then enter</li>
+</ul>
+<p>You should be back in the usual terminal. You’re set!</p>
+<p>A suggested workflow: never touch anything on EDDIE. If you want to edit anything, edit it locally, push it, then pull it on EDDIE. On EDDIE, make sure to put the code in your scratch (<code>/exports/eddie/scratch/chalcrow/path/to/my_project</code>). This gets deleted every 30 days, but your code is always on GitHub so it doesn’t matter. <code>uv</code> will create the virtual environments here. These are too big to fit into your not-scratch.</p>
+<p>So, practically, log-in to EDDIE (<code>ssh chalcrow@eddie.ecdf.ed.ac.uk</code>), cd to your scratch and where you wanna save your code (<code>cd /exports/eddie/scratch/chalcrow/</code>), get your project (<code>git clone https://github.com/chrishalcrow/my_project.git</code>), and change directory into your project (<code>cd my_project</code>). <code>uv</code> should just work. Try running <code>uv run script.py</code>.</p>
 </section>
 <section id="run-python-on-eddie-using-.sh-file" class="level1">
 <h1>Run python on EDDIE using <code>.sh</code> file</h1>
