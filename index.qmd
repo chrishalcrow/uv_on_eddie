@@ -100,10 +100,10 @@ To run jobs on EDDIE, you request a node with certain compute limits. Then tell 
 #$ -cwd -pe sharedmem 1 -l h_vmem=19G,h_rt=0:29:59 -N my_job
 
 cd /exports/eddie/scratch/chalcrow/path/to/my_project
-/home/chalcrow/.local/bin/uv run main_script.py
+/home/chalcrow/.local/bin/uv run script.py
 ```
 
-(we have to replace `uv` with `/home/chalcrow/.local/bin/uv` [replace to use your username]] because of some quirk of EDDIE).
+(we have to replace `uv` with `/home/chalcrow/.local/bin/uv` [replace to use your username] because of some quirk of EDDIE).
 
 Add this file to your project folder and call it "test_script.sh", push it locally, pull it on EDDIE, and run `qsub test_script.sh`. After it runs, the output should be in `my_job.o43563274` (or some other random number). Display the ouput in terminal by running `cat my_job.o43563274`.
 
@@ -117,9 +117,11 @@ The worst bit of EDDIE is moving files to and from the DataStore. The basic stag
 cp -rn source destination
 ```
 
-The official docs suggest using `rsync` but we've had permission issues with this in the past. So I now suggest using `cp`. However, we use the `-n` flag which means "do not copy over anything". This is just to be when dealing with raw data.
+The SIDB storage is located at `/exports/cmvm/datastore/sbms/groups/CDBS_SIDB_storage/` and the NolanLab ActiveProjects folder is at `/exports/cmvm/datastore/sbms/groups/CDBS_SIDB_storage/NolanLab/ActiveProjects/`.
 
-If you have fairly simple things to copy over, I would just write `.sh` files like the one above and save them in a stagein or stageout folder in your repo. If you don't have too many, you could save the scripts used to save python too. (Alternatively, write scripts to generate these. [See below]()). So you'd entire project (the thing you're push/pulling from on github) looks like:
+The official EDDIE docs suggest using `rsync` but we've had permission issues with this in the past. So I now suggest using `cp`. However, we use the `-n` flag which means "do not copy over anything". This is just to be when dealing with raw data.
+
+If you have fairly simple things to copy over, I would just write `.sh` files like the one above and save them in a stagein or stageout folder in your repo. If you don't have too many, you could save the scripts used to save python too. (Alternatively, write scripts to generate these. More advice coming soon!). So you'd entire project (the thing you're push/pulling from on github) looks like:
 
 ``` bash
 my_project/
@@ -138,7 +140,3 @@ my_project/
 ```
 
 # Life is slightly easier with `eddie_helper`
-
-
-
-
