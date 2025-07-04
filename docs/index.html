@@ -71,7 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-6bd9cfa162949bde0a231f530c97869d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-09537c9ecba8558085948e1b802a414a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -117,7 +117,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
   <li><a href="#using-uv-locally" id="toc-using-uv-locally" class="nav-link" data-scroll-target="#using-uv-locally">Using <code>uv</code> locally</a></li>
   <li><a href="#install-uv-on-eddie" id="toc-install-uv-on-eddie" class="nav-link" data-scroll-target="#install-uv-on-eddie">Install <code>uv</code> on EDDIE</a></li>
-  <li><a href="#run-python-on-eddie-using-.sh-file" id="toc-run-python-on-eddie-using-.sh-file" class="nav-link" data-scroll-target="#run-python-on-eddie-using-.sh-file">Run python on EDDIE using <code>.sh</code> file</a></li>
+  <li><a href="#run-python-on-eddie" id="toc-run-python-on-eddie" class="nav-link" data-scroll-target="#run-python-on-eddie">Run python on EDDIE</a></li>
   <li><a href="#stageinout-files" id="toc-stageinout-files" class="nav-link" data-scroll-target="#stageinout-files">Stagein/out files</a></li>
   <li><a href="#life-is-slightly-easier-with-eddie_helper" id="toc-life-is-slightly-easier-with-eddie_helper" class="nav-link" data-scroll-target="#life-is-slightly-easier-with-eddie_helper">Life is slightly easier with <code>eddie_helper</code></a></li>
   </ul>
@@ -188,52 +188,52 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="install-uv-on-eddie" class="level1">
 <h1>Install <code>uv</code> on EDDIE</h1>
 <p>Because of EDDIE’s storage system and a few supercomputer quirks, we need to adjust some of the default settings when installing uv on EDDIE. Note: you only need to do this <em>once</em>, then <code>uv</code> will be installed forever on your EDDIE login. If you’re not used to vim this will be a bit fiddly. Please follow these instructions carefully.</p>
-<p>Log in to Eddie. Request a login node using <code>qlogin -l h_vmem=8G</code>. Install <code>uv</code> using <code>curl -LsSf https://astral.sh/uv/install.sh | sh</code>.</p>
-<p>We need to tell <code>uv</code> where to store the cache. We do this by adding the line <code>export UV_CACHE_DIR="/exports/eddie/scratch/chalcrow/uv"</code> to the file <code>.bashrc</code>. To do this do the following:</p>
-<ul>
-<li>do <code>vim .bashrc</code>. You should enter vim and see some text.</li>
-<li>type <code>shift + g</code>. Your cursor should move to the bottom of the text.</li>
-<li>type <code>o</code>. You should be in “insert” mode and be able to type.</li>
-<li>type “export UV_CACHE_DIR=”/exports/eddie/scratch/chalcrow/uv” with your username instead of mine.</li>
-<li>type <code>esc</code>, then <code>:w</code>, then <code>enter</code>, then <code>:q</code>, then enter</li>
-</ul>
-<p>You should be back in the usual terminal. You’re set!</p>
+<p>Log in to Eddie. Request an interactive node using</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">qlogin</span> <span class="at">-l</span> h_vmem=8G<span class="kw">`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Install <code>uv</code> using `<code>bash curl -LsSf https://astral.sh/uv/install.sh | sh`</code></p>
+<p>We need to tell <code>uv</code> where to store the cache. We do this by adding the line <code>export UV_CACHE_DIR="/exports/eddie/scratch/$USER/uv"</code> to the file <code>.bashrc</code>. To do this, run the following in terminal (with $USER changed to your username):</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"export UV_CACHE_DIR=/exports/eddie/scratch/</span><span class="va">$USER</span><span class="st">/uv"</span> <span class="op">&gt;&gt;</span> ~/.bashrc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We then need to tell the system that we’ve updated our <code>bashrc</code> file by running</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashrc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You can check this worked by running <code>$UV_CACHE_DIR</code>. You should get the following output:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">-bash:</span> /exports/eddie/scratch/chalcrow/uv: Is a directory</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="run-python-on-eddie" class="level1">
+<h1>Run python on EDDIE</h1>
 <p>A suggested workflow: never touch anything on EDDIE. If you want to edit anything, edit it locally, push it, then pull it on EDDIE. On EDDIE, make sure to put the code in your scratch (<code>/exports/eddie/scratch/chalcrow/path/to/my_project</code>). This gets deleted every 30 days, but your code is always on GitHub so it doesn’t matter. <code>uv</code> will create the virtual environments here. These are too big to fit into your not-scratch.</p>
 <p>So, practically, log-in to EDDIE (<code>ssh chalcrow@eddie.ecdf.ed.ac.uk</code>), cd to your scratch and where you wanna save your code (<code>cd /exports/eddie/scratch/chalcrow/</code>), get your project (<code>git clone https://github.com/chrishalcrow/my_project.git</code>), and change directory into your project (<code>cd my_project</code>). <code>uv</code> should just work. Try running <code>uv run script.py</code>.</p>
-</section>
-<section id="run-python-on-eddie-using-.sh-file" class="level1">
-<h1>Run python on EDDIE using <code>.sh</code> file</h1>
-<p>To run jobs on EDDIE, you request a node with certain compute limits. Then tell it what to do. The following script asks for 1 cores with 19G of RAM each (the smallest cores on EDDIE have 19G, so there’s no point going lower) for 30 minutes. The job is called <code>my_job</code>. The job changes directory to where my script is, then does <code>uv run scripy.py</code>.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#$ -cwd -pe sharedmem 1 -l h_vmem=19G,h_rt=0:29:59 -N my_job</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /exports/eddie/scratch/chalcrow/path/to/my_project</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">/home/chalcrow/.local/bin/uv</span> run script.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>(we have to replace <code>uv</code> with <code>/home/chalcrow/.local/bin/uv</code> [replace to use your username] because of some quirk of EDDIE).</p>
+<p>To run jobs on EDDIE, you request a node with certain compute limits. Then tell it what to do. The following script asks for 1 cores with 19G of RAM each (the smallest cores on EDDIE have 19G, so there’s no point going lower) for 30 minutes. The job is called <code>my_job</code>. The job changes directory to where my script is, then does <code>uv run script.py</code>.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">#$ -cwd -pe sharedmem 1 -l h_vmem=19G,h_rt=0:29:59 -N my_job</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> <span class="va">$HOME</span>/.bashrc</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /exports/eddie/scratch/chalcrow/path/to/my_project</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="va">$HOME</span><span class="ex">/.local/bin/uv</span> run script.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>(We have to replace <code>uv</code> with <code>$HOME/.local/bin/uv</code> because of some quirk of EDDIE.)</p>
 <p>Add this file to your project folder and call it “test_script.sh”, push it locally, pull it on EDDIE, and run <code>qsub test_script.sh</code>. After it runs, the output should be in <code>my_job.o43563274</code> (or some other random number). Display the ouput in terminal by running <code>cat my_job.o43563274</code>.</p>
 </section>
 <section id="stageinout-files" class="level1">
 <h1>Stagein/out files</h1>
 <p>The worst bit of EDDIE is moving files to and from the DataStore. The basic stage script looks like:</p>
-<pre class="bin"><code>#!/bin/sh
-#$ -cwd -q staging -l h_rt=00:59:59
-cp -rn source destination</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/sh</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#$ -cwd -q staging -l h_rt=00:59:59</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-rn</span> source destination</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The SIDB storage is located at <code>/exports/cmvm/datastore/sbms/groups/CDBS_SIDB_storage/</code> and the NolanLab ActiveProjects folder is at <code>/exports/cmvm/datastore/sbms/groups/CDBS_SIDB_storage/NolanLab/ActiveProjects/</code>.</p>
-<p>The official EDDIE docs suggest using <code>rsync</code> but we’ve had permission issues with this in the past. So I now suggest using <code>cp</code>. However, we use the <code>-n</code> flag which means “do not copy over anything”. This is just to be when dealing with raw data.</p>
-<p>If you have fairly simple things to copy over, I would just write <code>.sh</code> files like the one above and save them in a stagein or stageout folder in your repo. If you don’t have too many, you could save the scripts used to save python too. (Alternatively, write scripts to generate these. More advice coming soon!). So you’d entire project (the thing you’re push/pulling from on github) looks like:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">my_project/</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">main_script.py</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">pyproject.toml</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">stagein_scripts/</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        <span class="ex">stagein_1.sh</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        <span class="ex">stagein_2.sh</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        <span class="ex">stagein_3.sh</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="ex">stageout_scripts/</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        <span class="ex">stageout_1.sh</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>        <span class="ex">...</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="ex">python_scripts/</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        <span class="ex">run_M20_D21.sh</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        <span class="ex">...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The official EDDIE docs suggest using <code>rsync</code> but we’ve had permission issues with this in the past. So I now suggest using <code>cp</code>. However, we use the <code>-n</code> flag which means “do not overwrite anything that is already there”. This is just to be careful when dealing with raw data.</p>
+<p>If you have fairly simple things to copy over, I would just write <code>.sh</code> files like the one above and save them in a stagein or stageout folder in your repo. If you don’t have too many, you could save the scripts used to save python too. (Alternatively, write scripts to generate these. More advice coming soon!). So your entire project (the thing you’re push/pulling from on github) looks like:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">my_project/</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">main_script.py</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">pyproject.toml</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">stagein_scripts/</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        <span class="ex">stagein_1.sh</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>        <span class="ex">stagein_2.sh</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>        <span class="ex">stagein_3.sh</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="ex">stageout_scripts/</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>        <span class="ex">stageout_1.sh</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>        <span class="ex">...</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="ex">python_scripts/</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>        <span class="ex">run_M20_D21.sh</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>        <span class="ex">...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="life-is-slightly-easier-with-eddie_helper" class="level1">
 <h1>Life is slightly easier with <code>eddie_helper</code></h1>

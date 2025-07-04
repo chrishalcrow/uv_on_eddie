@@ -6,6 +6,7 @@ format:
   html:
     toc: true
     toc-location: left
+    code-copy: true
 ---
 
 # Introduction
@@ -75,35 +76,51 @@ For whatever code you're working on, this is the first step. Make sure `uv run m
 
 Because of EDDIE's storage system and a few supercomputer quirks, we need to adjust some of the default settings when installing uv on EDDIE. Note: you only need to do this _once_, then `uv` will be installed forever on your EDDIE login. If you're not used to vim this will be a bit fiddly. Please follow these instructions carefully.
 
-Log in to Eddie. Request a login node using `qlogin -l h_vmem=8G`. Install `uv` using `curl -LsSf https://astral.sh/uv/install.sh | sh`.
+Log in to Eddie. Request an interactive node using
 
-We need to tell `uv` where to store the cache. We do this by adding the line `export UV_CACHE_DIR="/exports/eddie/scratch/chalcrow/uv"` to the file `.bashrc`. To do this do the following:
+``` bash
+qlogin -l h_vmem=8G`
+``` 
+Install `uv` using 
+```` bash
+curl -LsSf https://astral.sh/uv/install.sh | sh`
+```
 
-- do `vim .bashrc`. You should enter vim and see some text.
-- type `shift + g`. Your cursor should move to the bottom of the text.
-- type `o`. You should be in "insert" mode and be able to type.
-- type "export UV_CACHE_DIR="/exports/eddie/scratch/chalcrow/uv" with your username instead of mine.
-- type `esc`, then `:w`, then `enter`, then `:q`, then enter
+We need to tell `uv` where to store the cache. We do this by adding the line `export UV_CACHE_DIR="/exports/eddie/scratch/$USER/uv"` to the file `.bashrc`. To do this, run the following in terminal (with $USER changed to your username):
 
-You should be back in the usual terminal. You're set!
+``` bash
+echo "export UV_CACHE_DIR=/exports/eddie/scratch/$USER/uv" >> ~/.bashrc
+```
+We then need to tell the system that we've updated our `bashrc` file by running
+
+``` bash
+source .bashrc
+```
+
+You can check this worked by running `$UV_CACHE_DIR`. You should get the following output:
+
+``` bash
+-bash: /exports/eddie/scratch/chalcrow/uv: Is a directory
+```
+
+# Run python on EDDIE
 
 A suggested workflow: never touch anything on EDDIE. If you want to edit anything, edit it locally, push it, then pull it on EDDIE. On EDDIE, make sure to put the code in your scratch (`/exports/eddie/scratch/chalcrow/path/to/my_project`). This gets deleted every 30 days, but your code is always on GitHub so it doesn't matter. `uv` will create the virtual environments here. These are too big to fit into your not-scratch.
 
 So, practically, log-in to EDDIE (`ssh chalcrow@eddie.ecdf.ed.ac.uk `), cd to your scratch and where you wanna save your code (`cd /exports/eddie/scratch/chalcrow/`), get your project (`git clone https://github.com/chrishalcrow/my_project.git`), and change directory into your project (`cd my_project`). `uv` should just work. Try running `uv run script.py`.
 
-# Run python on EDDIE using `.sh` file
-
-To run jobs on EDDIE, you request a node with certain compute limits. Then tell it what to do. The following script asks for 1 cores with 19G of RAM each (the smallest cores on EDDIE have 19G, so there's no point going lower) for 30 minutes. The job is called `my_job`. The job changes directory to where my script is, then does `uv run scripy.py`.
+To run jobs on EDDIE, you request a node with certain compute limits. Then tell it what to do. The following script asks for 1 cores with 19G of RAM each (the smallest cores on EDDIE have 19G, so there's no point going lower) for 30 minutes. The job is called `my_job`. The job changes directory to where my script is, then does `uv run script.py`.
 
 ``` bash
 #!/bin/bash
 #$ -cwd -pe sharedmem 1 -l h_vmem=19G,h_rt=0:29:59 -N my_job
 
+source $HOME/.bashrc
 cd /exports/eddie/scratch/chalcrow/path/to/my_project
-/home/chalcrow/.local/bin/uv run script.py
+$HOME/.local/bin/uv run script.py
 ```
 
-(we have to replace `uv` with `/home/chalcrow/.local/bin/uv` [replace to use your username] because of some quirk of EDDIE).
+(We have to replace `uv` with `$HOME/.local/bin/uv` because of some quirk of EDDIE.)
 
 Add this file to your project folder and call it "test_script.sh", push it locally, pull it on EDDIE, and run `qsub test_script.sh`. After it runs, the output should be in `my_job.o43563274` (or some other random number). Display the ouput in terminal by running `cat my_job.o43563274`.
 
@@ -111,7 +128,7 @@ Add this file to your project folder and call it "test_script.sh", push it local
 
 The worst bit of EDDIE is moving files to and from the DataStore. The basic stage script looks like:
 
-``` bin
+``` bash
 #!/bin/sh
 #$ -cwd -q staging -l h_rt=00:59:59
 cp -rn source destination
@@ -119,9 +136,9 @@ cp -rn source destination
 
 The SIDB storage is located at `/exports/cmvm/datastore/sbms/groups/CDBS_SIDB_storage/` and the NolanLab ActiveProjects folder is at `/exports/cmvm/datastore/sbms/groups/CDBS_SIDB_storage/NolanLab/ActiveProjects/`.
 
-The official EDDIE docs suggest using `rsync` but we've had permission issues with this in the past. So I now suggest using `cp`. However, we use the `-n` flag which means "do not copy over anything". This is just to be when dealing with raw data.
+The official EDDIE docs suggest using `rsync` but we've had permission issues with this in the past. So I now suggest using `cp`. However, we use the `-n` flag which means "do not overwrite anything that is already there". This is just to be careful when dealing with raw data.
 
-If you have fairly simple things to copy over, I would just write `.sh` files like the one above and save them in a stagein or stageout folder in your repo. If you don't have too many, you could save the scripts used to save python too. (Alternatively, write scripts to generate these. More advice coming soon!). So you'd entire project (the thing you're push/pulling from on github) looks like:
+If you have fairly simple things to copy over, I would just write `.sh` files like the one above and save them in a stagein or stageout folder in your repo. If you don't have too many, you could save the scripts used to save python too. (Alternatively, write scripts to generate these. More advice coming soon!). So your entire project (the thing you're push/pulling from on github) looks like:
 
 ``` bash
 my_project/
